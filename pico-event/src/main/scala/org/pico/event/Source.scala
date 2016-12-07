@@ -8,8 +8,9 @@ import org.pico.disposal.syntax.disposable._
 import org.pico.event.syntax.hasForeach._
 
 import scala.language.higherKinds
-import org.pico.atomic.syntax.std.atomicReference._
 
+/** An abstraction from which events may be emitted to subscribers.
+  */
 trait Source[+A] extends Disposer { self =>
   /** Get the Source representation of this.
     */

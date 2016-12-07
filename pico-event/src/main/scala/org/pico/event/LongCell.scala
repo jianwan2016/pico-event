@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicLong
 
 import org.pico.atomic.syntax.std.atomicLong._
 
+/** A specialised cell that is efficient for storing Long.
+  */
 final class LongCell(initial: Long) extends Cell[Long] {
   val valueRef = new AtomicLong(initial)
 

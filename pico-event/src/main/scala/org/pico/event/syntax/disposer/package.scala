@@ -5,7 +5,7 @@ import org.pico.event.Cell
 
 package object disposer {
   implicit class DisposerOps_dEhxmsY(val self: Disposer) extends AnyVal {
-    /** Register an var reference for reset on close.  When the disposer is closed, the
+    /** Register a var reference for reset on close.  When the disposer is closed, the
       * replacement value is swapped in.
       *
       * @param replacement The replacement value to use when swapping

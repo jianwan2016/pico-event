@@ -17,6 +17,8 @@ trait CompositeSinkSource[A, B] extends SinkSource[A, B] with SimpleDisposer {
 }
 
 object CompositeSinkSource {
+  /** Create a sink source, that delegates to the provided sink and source.
+    */
   def from[A, B](sink: Sink[A], source: Source[B]): SinkSource[A, B] = {
     new CompositeSinkSource[A, B] { self =>
       override val asSink: Sink[A] = self.disposes(sink)

@@ -6,13 +6,21 @@ import org.pico.disposal.std.autoCloseable._
 
 @specialized(Boolean, Long, Double)
 trait View[+A] extends SimpleDisposer { self =>
+  /** Upcast to [[View]].
+    */
   def asView: View[A] = this
 
+  /** Get the current value of the view.
+    */
   def value: A
 
+  /** A source of invalidations
+    */
   def invalidations: Source[Unit]
 
-  lazy val source = this.disposes(invalidations.map(_ => value))
+  /** A source of new values
+    */
+  final lazy val source: Source[A] = this.disposes(invalidations.map(_ => value))
 }
 
 object View {
@@ -33,6 +41,7 @@ object View {
         this.disposes(ff.invalidations.subscribe(_ => invalidate()))
 
         override def compute(): B = ff.value(fa.value)
+
       }
     }
 

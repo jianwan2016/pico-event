@@ -16,10 +16,17 @@ import org.pico.disposal.{OnClose, SimpleDisposer}
   * @tparam B The source event type
   */
 trait Subscribers[-A, +B] extends SimpleDisposer {
-  def subscribe(subscriber: (B) => Unit): Closeable
+  /** Add the subscriber.  Events continue to be published to the subscriber until
+    * it is garbage collected.
+    */
+  def subscribe(subscriber: B => Unit): Closeable
 
+  /** Publish the event to subscribers.
+    */
   def publish(event: A): Unit
 
+  /** Clean up any weak references as necessary.
+    */
   def houseKeep(): Unit
 }
 
@@ -31,7 +38,7 @@ object Subscribers {
 
       def transform: A => B = f
 
-      override def subscribe(subscriber: (B) => Unit): Closeable = {
+      override def subscribe(subscriber: B => Unit): Closeable = {
         val wrapper = Wrapper(subscriber)
         val subscriberRef = new WeakReference(wrapper)
 
@@ -50,13 +57,25 @@ object Subscribers {
         val v = transform(event)
 
         subscribers.get().foreach { subscriberRef =>
+          // The use of the wrapper variable facilitates garbage collection.
+          //
+          // Weak references are reset to null by the garbage collector when it discovers the
+          // reference is not reachable and GCs invocations are non-deterministic.
+          //
+          // The act of calling the subscriber keeps the subscriber reference reachable during the
+          // call.  Should a GC coincide with the call to the subscriber, the GC would determine
+          // that the subscriber is reachable and not set the corresponding weak reference to null
+          // even if this subscriber reference is the only subscriber reference.
+          //
+          // The extra level of indirection introduced by the wrapper variable coupled with the
+          // strategy of setting it to null as early as possible minimises the probability of
+          // keeping the weak reference alive unnecessarily.
           var wrapper = subscriberRef.get()
 
           if (wrapper != null) {
             val subscriber = wrapper.target
-            // Drop reference to wrapper so that the garbage collector can collect it if there are no
-            // other references to it.  This helps facilitate earlier collection, especially if a lot
-            // of time is spent in the subscriber.  This is why wrapper is a var.
+            // Drop reference to wrapper as early as possible, as per above explanation, so that the
+            // garbage collector can collect it if there are no other references to it.
             wrapper = null
             subscriber(v)
           } else {

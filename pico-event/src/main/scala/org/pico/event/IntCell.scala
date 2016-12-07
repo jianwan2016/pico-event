@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.pico.atomic.syntax.std.atomicInteger._
 
+/** A specialised cell that is efficient for storing Int.
+  */
 final class IntCell(initial: Int) extends Cell[Int] {
   val valueRef = new AtomicInteger(initial)
 

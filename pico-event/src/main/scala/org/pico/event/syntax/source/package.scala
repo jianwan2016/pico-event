@@ -143,6 +143,8 @@ package object source {
   }
 
   implicit class SourceOps_r8pPKQJ(val self: Source[Long]) extends AnyVal {
+    /** Create a view that represents the sum of all the values emitted from the source.
+      */
     def sum: View[Long] = {
       val cell = LongCell(0L)
 
@@ -153,6 +155,8 @@ package object source {
   }
 
   implicit class SourceOps_iAPaWug(val self: Source[Int]) extends AnyVal {
+    /** Create a view that represents the sum of all the values emitted from the source.
+      */
     def sum: View[Int] = {
       val cell = IntCell(0)
 

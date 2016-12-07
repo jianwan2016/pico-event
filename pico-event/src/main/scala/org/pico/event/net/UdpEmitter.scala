@@ -8,8 +8,10 @@ import org.pico.disposal.std.autoCloseable._
 import org.pico.event.{Bus, Sink, SinkSource}
 
 object UdpEmitter {
-  /** Create [[SinkSource]] that emits UDP packets when publishing to its sink and reports failures
-    * from its source.
+  /** Create a [[SinkSource]] that emits UDP packets when publishing to its sink and reports
+    * failures from its source.
+    *
+    * @param addressLookup A function that returns the address to which the UDP packet should be emitted
     */
   def apply(addressLookup: () => InetSocketAddress): SinkSource[ByteBuffer, UdpEmitFailed] = {
     val clientChannel = DatagramChannel.open

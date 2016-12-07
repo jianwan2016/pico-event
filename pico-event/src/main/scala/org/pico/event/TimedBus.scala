@@ -8,6 +8,8 @@ import org.pico.disposal.std.autoCloseable._
 
 import scala.concurrent.duration.{Deadline, Duration}
 
+/** A bus which measures the duration of every publish call.
+  */
 trait TimedBus[A] extends Bus[A] with SimpleDisposer {
   val impl = this.swapDisposes(ClosedSubscribers, new AtomicReference(Subscribers[A, A](identity)))
 
@@ -19,6 +21,9 @@ trait TimedBus[A] extends Bus[A] with SimpleDisposer {
 }
 
 object TimedBus {
+  /** Create a bus which measures the duration of every publish call and publishes those durations
+    * to the provided sink.
+    */
   def apply[A](times: Sink[Duration]): Bus[A] = {
     new TimedBus[A] {
       override def publish(event: A): Unit = {
